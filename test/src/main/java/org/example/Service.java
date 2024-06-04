@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Service {
     private int key;
@@ -12,14 +13,18 @@ public class Service {
     private int channelRight;
     private int value;
     private int channelSpare;
-    private ArrayList path = new ArrayList();
+    private List<Integer> path = new ArrayList<>();
 
-    public ArrayList getPath() {
+    public List<Integer> getPath() {
         return path;
     }
 
-    public void setPath(ArrayList path) {
+    public void setPath(List<Integer> path) {
         this.path = path;
+    }
+
+    public void addPath(Integer edge) {
+        path.add(edge);
     }
 
     public int getKey() {
@@ -38,7 +43,7 @@ public class Service {
         this.channelLeft = channelLeft;
         this.channelRight = channelRight;
         this.value = value;
-        this.channelSpare = CHANNEL-(channelRight-channelLeft+1);
+        this.channelSpare = CHANNEL - (channelRight - channelLeft + 1);
     }
 
     public int getStart() {
