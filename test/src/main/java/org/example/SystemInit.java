@@ -3,15 +3,16 @@ package org.example;
 import java.util.*;
 
 public class SystemInit {
-    public static Map<String,List<List<Integer>>> allPaths = new HashMap<>();
     public static final Scanner in = new Scanner(System.in);
     public static int N; //点的个数
     public static int M;//边的个数
     public static int J;//业务个数
     public static int T;//测试场景个数
     private Map<Integer, ArrayList<Service>> edgeAndService = new HashMap<>();
+    private Map<Integer, ArrayList<Service>> edgeAndServiceCopy = new HashMap<>();
     ArrayList maxChangeCount = new ArrayList();
     ArrayList<Service> services = new ArrayList();
+    ArrayList<Service> servicesCopy = new ArrayList();
     Graph graph = new Graph();
 
     public SystemInit() {
@@ -44,29 +45,49 @@ public class SystemInit {
             services.add(service);
         }
     }
-
-    public void find() {
-        for (int i = 1; i <= N; i++) {
-            for (int j = 1; j <= N; j++) {
-                if (i != j) {
-                    List<List<Integer>> allPath = graph.findAllPaths(i, j);
-                    allPaths.put(i+""+j,allPath);
+    private void copyInfo(){
+        for (Integer key:edgeAndService.keySet()){
+            ArrayList<Service> services1 = edgeAndService.get(key);
+            ArrayList<Service> services2 = new ArrayList<>();
+            services1.forEach(service -> {
+                try {
+                    services2.add(service.clone());
+                }catch (CloneNotSupportedException e){
+                    e.printStackTrace();
                 }
-            }
+            });
+            edgeAndServiceCopy.put(key,services2);
         }
+        services.forEach(service -> {
+            try{
+                servicesCopy.add(service.clone());
+            }catch (CloneNotSupportedException e){
+                e.printStackTrace();
+            }
+        });
     }
+//    public void find() {
+//        for (int i = 1; i <= N; i++) {
+//            for (int j = 1; j <= N; j++) {
+//                if (i != j) {
+//                    List<List<Integer>> allPath = graph.findAllPaths(i, j);
+//                    allPaths.put(i+""+j,allPath);
+//                }
+//            }
+//        }
+//    }
 
     public void interactive() {
         T = in.nextInt();
-        int z = 2;
         for (int i = 0; i < T; i++) {
+            copyInfo();
             int badEdge = in.nextInt();
             List<Integer> badEdges = new ArrayList<>();
             while (badEdge != -1) {
                 badEdges.add(badEdge);
-                Set<Integer> integers = edgeAndService.keySet();
+                Set<Integer> integers = edgeAndServiceCopy.keySet();
                 if (integers.contains(badEdge)) {
-                    ArrayList<Service> services1 = edgeAndService.get(badEdge);
+                    ArrayList<Service> services1 = edgeAndServiceCopy.get(badEdge);
                     System.out.println(services1.size());
                     Graph.Edge edge1 = graph.getEdge(badEdge);
                     graph.removeEdge(edge1);
@@ -77,11 +98,10 @@ public class SystemInit {
                         }
                     });
                     for (Service service : services1) {
-                        edgeAndService.remove(service.getKey());
+                        edgeAndServiceCopy.remove(service.getKey());
                         service.setPath(new ArrayList<>());
-                        System.out.println(service.getKey() + " " + service.getPath().size());
-                        List<List<Integer>> paths = allPaths.get(service.getStart() + "" + service.getEnd());
-                        for (List<Integer> path : paths) {
+                        List<List<Integer>> allPath = graph.findAllPaths(edge1.getStart(),edge1.getEnd());
+                        for (List<Integer> path : allPath) {
                             if (Collections.disjoint(badEdges,path)){
                                 service.setPath(path);
                                 service.setEdgeNum(path.size());
@@ -91,10 +111,11 @@ public class SystemInit {
                             System.out.println(0);
                             continue;
                         }
+                        System.out.println(service.getKey() + " " + service.getPath().size());
                         StringBuffer s = new StringBuffer();
                         int size = 0;
                         for (Integer edge : service.getPath()) {
-                            edgeAndService.computeIfAbsent(edge, k -> new ArrayList<>()).add(service);
+                            edgeAndServiceCopy.computeIfAbsent(edge, k -> new ArrayList<>()).add(service);
                             s.append(edge);
                             s.append(" ");
                             s.append(service.getChannelLeft());

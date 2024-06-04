@@ -3,16 +3,15 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Service {
+public class Service implements Cloneable{
     private int key;
-    private int CHANNEL = 40;
+    private int channel;
     private int start;
     private int end;
     private int edgeNums;
     private int channelLeft;
     private int channelRight;
     private int value;
-    private int channelSpare;
     private List<Integer> path = new ArrayList<>();
 
     public List<Integer> getPath() {
@@ -43,7 +42,7 @@ public class Service {
         this.channelLeft = channelLeft;
         this.channelRight = channelRight;
         this.value = value;
-        this.channelSpare = CHANNEL - (channelRight - channelLeft + 1);
+        this.channel = channelRight-channelLeft+1;
     }
 
     public int getStart() {
@@ -92,6 +91,11 @@ public class Service {
 
     public void setChannelRight(int channelRight) {
         this.channelRight = channelRight;
+    }
+
+    @Override
+    protected Service clone() throws CloneNotSupportedException {
+        return (Service) super.clone();
     }
 
     @Override
