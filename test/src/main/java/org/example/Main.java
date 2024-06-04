@@ -5,5 +5,6 @@ public class Main {
         SystemInit systemInit = new SystemInit();
         systemInit.find();
         systemInit.interactive();
+        System.out.println("111");
     }
 }
